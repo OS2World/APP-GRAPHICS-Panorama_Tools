@@ -1,0 +1,6 @@
+30a31,35
+> #ifdef __EMX__
+> 	#undef HELPERS
+> 	#define HELPERS ""
+> #endif
+> 

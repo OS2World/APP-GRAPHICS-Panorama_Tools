@@ -1,0 +1,149 @@
+== Panorama Tools ==
+
+This is OS/2 port of Panorama Tools ver 2.8.4. It can be used to create 
+panoramas. I've compiled it including Java support, thus PTEditor.jar and 
+PTPicker.jar seem to be working.
+
+This tools can be also used for number of purposes like image distortion 
+corrections, changing of proection type, making various types of panorams, 
+creating textures, etc.
+
+More information is available in internet, PanoTools homepage is a good 
+starting point:
+  http://panotools.sourceforge.net/
+
+According to legal notice (Limits and Modifications, see below) main 
+distribution has limitation of 160 degrees. In case you do not violate 
+any legal issues, you can use full 360 degrees versions located in subdirs 
+named 360 of lib, include, tools directories. This is completely on your 
+responsibility.
+
+This build requires libc061.dll.
+
+
+
+=== Getting Started ===
+
+1. Create panorama file (e.g. pano.txt) with its description.
+   NB: Use .txt extention for panorama files otherwise PT programs does 
+   not recognize it.
+
+2. Run PTOptimize to get panorama data processed:
+     PTOptimize pano.txt
+
+3. Run PTmender to create panorama_image (image type will be taken from 
+   "p" parameter in pano.txt):
+     PTmender.exe -o panorama_image pano.txt
+
+4. If you use "TIFF_m" panorama output then number of TIFF files will be 
+   created that can be assembled with PTblender. There is an example:
+     PTmender.exe -o pano pano.txt
+     PTblender.exe -f z.tif -k0 pano0000.tif pano0001.tif ...
+
+How to get panorama file? This is a question. There are few possible ways. 
+First of all you can create it completely manually. It is possible but 
+setting of control points (i.e. points which are the same on different 
+input images) is terrible in general. Second, you can use ptpicker.jar 
+from original Helmut Dersch's distributed PanoTools package. Third, 
+you can try to generate control points automatically with tools like 
+autopano (http://autopano.kolor.com/), it looks working quite well with 
+ODIN and produces very good results in most simple cases.
+
+
+
+
+=== Building from sources ===
+
+0. download 
+
+1. run configure:
+ ash ./configure --with-zlib=/extras \
+     --with-png=/extras --with-jpeg=/extras \
+     --with-tiff=/extras --with-java=C:/usr/java141
+
+2. make some manual Makefiles updates for proper compilation (included 
+   Makefile is an example) and apply source patches:
+ ...
+ patch ptpicker.c ptpicker.diff
+ patch sys_ansi.c sys_ansi.diff 
+
+
+3. do make
+ make
+
+4. create dll:
+ dllar -d "Panorama Tools for OS/2" -L/extras/lib -ljpeg -lpng -ltiff -lz pano12.a
+ lxlite pano12.dll
+
+5. re-make tools with above dll:
+ cd tools
+ make clean
+ make
+ lxlite *.exe
+
+6. check tests:
+ cd tests
+ make check > test.log
+(Summary: 10 tests executed.  10 passed (0 failed) 100.00 percent passed)
+
+
+
+bz
+
+
+
+=== Legal Part (from original source) ===
+
+------------------------------------ 8< -------------------------------------
+
+Legal Issues:
+
+This software is distributed under GNU-license, see the
+file COPYING for details. Some parts of the software
+are derived from other sources, which are distributed under
+different copyrights. These are:
+(1) The JPEG-library distributed by the Independent JPEG group.
+This package contains a precompiled binary of the JPEG
+library and the header files required for compilation
+in the folder Sources/libs/. The legal terms for using the
+JPEG library can be found in the file /copyright/README_JPEG.
+(2) The PNG-library written by G.E.Schalnat et al.
+This package contains a precompiled binary of the PNG
+library and the header files required for compilation
+in the folder Sources/libs/. The legal terms for using the
+PNG library can be found in the file Sources/libs/png.h
+(3) The TIFF-library by Sam Leffler/ Silicon Graphics Inc.
+This package contains a precompiled binary of the TIFF
+library and the header files required for compilation
+in the folder Sources/libs/. The legal terms for using the
+TIFF library can be found in the file /copyright/README_TIFF.
+(4) The ZLIB-library by Jean-loup Gailly and Mark Adler.
+This package contains a precompiled binary of the ZLIB
+library and the header files required for compilation
+in the folder Sources/libs/. The legal terms for using the
+ZLIB library can be found in the file zlib.h.
+(5) The public domain Levenberg-Marquardt solver 
+of the Argonne National Laboratories MINPACK mathematical library,
+C translation by Steve Moshier (file lmdif.c).
+(6) Fast fourier transformation, code by:
+RC Singleton, Stanford Research Institute, Sept. 1968
+Copyright MJ Olesen, Queen's University at Kingston, 1995-97.
+See the file fftn.c for details.
+
+Limits and Modifications:
+
+This distribution of the sources limits processing
+of fisheye images to fields of view smaller than
+160 degrees. This limit is controlled by the constant
+MAX_FISHEYE_FOV in the file filter.h. There
+is some controversy regarding the legality of processing
+hemispherical images (ie images having 180 degree field
+of view) in connection with virtual reality panoramas.
+If your application of fisheye lenses is not prohibited
+by patents, you can build and use your own unlimited version 
+of the library by changing the soure code.
+
+Helmut Dersch
+der@fh-furtwangen.de
+
+------------------------------------ 8< -------------------------------------

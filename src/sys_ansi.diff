@@ -1,0 +1,6 @@
+306a307,309
+> #ifdef __EMX__
+> 	sprintf( cmd, "e \"%s\"", scriptFile->name );
+> #else
+307a311
+> #endif
